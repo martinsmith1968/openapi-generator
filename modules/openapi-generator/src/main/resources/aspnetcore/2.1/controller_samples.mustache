@@ -1,0 +1,17 @@
+    /// <summary>
+    /// {{#summary}}{{summary}}{{/summary}} Controller Samples
+    /// </summary>
+    internal static class {{classname}}ControllerSamples
+    { {{#operations}} {{#operation}}
+        /// <summary>
+        /// {{#summary}}{{summary}}{{/summary}}{{#notes}}{{notes}}{{/notes}}
+        /// </summary>
+        /// <remarks>
+        /// Sample responses - for reference when building Interface implementation
+        /// </remarks>
+        internal static IActionResult {{operationId}}({{#allParams}}{{&dataType}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        {
+{{>operation_sample}}
+        }
+{{/operation}} {{/operations}}
+    }

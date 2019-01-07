@@ -40,6 +40,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
     public static final String USE_SWASHBUCKLE = "useSwashbuckle";
     public static final String ASPNET_CORE_VERSION = "aspnetCoreVersion";
+    public static final String USE_INTERFACES = "useInterfaces";
 
     private String packageGuid = "{" + randomUUID().toString().toUpperCase(Locale.ROOT) + "}";
 
@@ -47,6 +48,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     protected Logger LOGGER = LoggerFactory.getLogger(AspNetCoreServerCodegen.class);
 
     private boolean useSwashbuckle = true;
+    private boolean useInterfaces = false;
     protected int serverPort = 8080;
     protected String serverHost = "0.0.0.0";
     protected String aspnetCoreVersion= "2.1"; // default to 2.1
@@ -58,6 +60,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
         modelTemplateFiles.put("model.mustache", ".cs");
         apiTemplateFiles.put("controller.mustache", ".cs");
+        //apiTemplateFiles.put("controller_interface.mustache", ".cs");
 
         embeddedTemplateDir = templateDir = "aspnetcore/2.1";
 
@@ -111,6 +114,10 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
                 "Uses the Swashbuckle.AspNetCore NuGet package for documentation.",
                 useSwashbuckle);
 
+        addSwitch(USE_INTERFACES,
+                "Generate a matching Interface for each controller",
+                useInterfaces);
+
     }
 
     @Override
@@ -149,6 +156,12 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
             useSwashbuckle = convertPropertyToBooleanAndWriteBack(USE_SWASHBUCKLE);
         } else {
             additionalProperties.put(USE_SWASHBUCKLE, useSwashbuckle);
+        }
+
+        if (additionalProperties.containsKey(USE_INTERFACES)) {
+            useInterfaces = convertPropertyToBooleanAndWriteBack(USE_INTERFACES);
+        } else {
+            additionalProperties.put(USE_INTERFACES, useInterfaces);
         }
 
         // determine the ASP.NET core version setting

@@ -10,15 +10,27 @@ using {{packageName}}.Attributes;
 using {{packageName}}.Models;
 
 namespace {{packageName}}.Controllers
-{ {{#operations}}
+{ {{#useInterfaces}}
+{{>controller_interface}} {{/useInterfaces}} {{#operations}}
     /// <summary>
-    /// {{description}}
+    /// {{classname}} Controller
     /// </summary>{{#description}}
     [Description("{{description}}")]{{/description}}
     public class {{classname}}Controller : ControllerBase
-    { {{#operation}}
+    { {{#useInterfaces}}
+        private readonly I{{classname}}Controller _implemented{{classname}}Controller;
+
         /// <summary>
-        /// {{#summary}}{{summary}}{{/summary}}
+        /// Constructor accepting interface for implementation of endpoints
+        /// </summary>
+        public {{classname}}Controller(I{{classname}}Controller implemented{{classname}}Controller)
+        {
+            _implemented{{classname}}Controller = implemented{{classname}}Controller
+                ?? throw new ArgumentNullException(nameof(implemented{{classname}}Controller));
+        }
+        {{/useInterfaces}} {{#operation}}
+        /// <summary>
+        /// {{#summary}}{{summary}}{{/summary}}{{#notes}}{{notes}}{{/notes}}
         /// </summary>{{#notes}}
         /// <remarks>{{notes}}</remarks>{{/notes}}{{#allParams}}
         /// <param name="{{paramName}}">{{description}}</param>{{/allParams}}{{#responses}}
@@ -29,27 +41,17 @@ namespace {{packageName}}.Controllers
         [SwaggerOperation("{{operationId}}")]{{#responses}}{{#dataType}}
         [SwaggerResponse(statusCode: {{code}}, type: typeof({{&dataType}}), description: "{{message}}")]{{/dataType}}{{^dataType}}{{/dataType}}{{/responses}}{{/useSwashbuckle}}
         public virtual IActionResult {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
-        { {{#responses}}
-{{#dataType}}
-            //TODO: Uncomment the next line to return response {{code}} or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode({{code}}, default({{&dataType}}));
-{{/dataType}}
-{{^dataType}}
-            //TODO: Uncomment the next line to return response {{code}} or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode({{code}});
-{{/dataType}}{{/responses}}
-{{#returnType}}
-            string exampleJson = null;
-            {{#examples}}
-            exampleJson = "{{{example}}}";
-            {{/examples}}
-            {{#isListCollection}}{{>listReturn}}{{/isListCollection}}{{^isListCollection}}{{#isMapContainer}}{{>mapReturn}}{{/isMapContainer}}{{^isMapContainer}}{{>objectReturn}}{{/isMapContainer}}{{/isListCollection}}
-            {{!TODO: defaultResponse, examples, auth, consumes, produces, nickname, externalDocs, imports, security}}
-            //TODO: Change the data returned
-            return new ObjectResult(example);{{/returnType}}{{^returnType}}
-            throw new NotImplementedException();{{/returnType}}
+        { {{#useInterfaces}}
+            return _implemented{{classname}}Controller.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+        {{/useInterfaces}} {{^useInterfaces}}
+         {{>operation_sample}} {{/useInterfaces}}
         }
         {{/operation}}
     }
 {{/operations}}
+{{#useInterfaces}}
+
+#if DEBUG
+{{>controller_samples}}
+#endif{{/useInterfaces}}
 }
