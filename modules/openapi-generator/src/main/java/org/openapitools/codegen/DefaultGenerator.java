@@ -17,6 +17,8 @@
 
 package org.openapitools.codegen;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
@@ -185,8 +187,14 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
 
         // HACK: MS
         try {
+            // HACK: MS - Export internal model as Json for template development
             ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(new File("C:\\Temp\\openAPI.json"), openAPI);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            String fileName = config.getInputSpec() + ".openAPIModel.json";
+
+            mapper.writerWithDefaultPrettyPrinter()
+                    .writeValue(new File(fileName), openAPI);
         } catch (Exception e) {
             e.printStackTrace();
         }

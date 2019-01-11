@@ -456,13 +456,13 @@ public class DefaultCodegen implements CodegenConfig {
      */
     public void setGlobalOpenAPI(OpenAPI openAPI) {
         this.globalOpenAPI = openAPI;
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            mapper.writeValue(new File("/tmp/openAPI.json"), openAPI);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //try {
+        //    ObjectMapper mapper = new ObjectMapper();
+        //    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        //    mapper.writeValue(new File("/tmp/openAPI.json"), openAPI);
+        //} catch (Exception e) {
+        //    e.printStackTrace();
+        //}
     }
 
 
