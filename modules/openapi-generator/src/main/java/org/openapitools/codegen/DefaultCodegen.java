@@ -17,7 +17,9 @@
 
 package org.openapitools.codegen;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
 import com.samskivert.mustache.Mustache.Compiler;
 
@@ -454,6 +456,13 @@ public class DefaultCodegen implements CodegenConfig {
      */
     public void setGlobalOpenAPI(OpenAPI openAPI) {
         this.globalOpenAPI = openAPI;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            mapper.writeValue(new File("/tmp/openAPI.json"), openAPI);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
