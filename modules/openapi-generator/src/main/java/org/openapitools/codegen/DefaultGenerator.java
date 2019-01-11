@@ -17,6 +17,7 @@
 
 package org.openapitools.codegen;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
@@ -181,6 +182,14 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
 
         config.processOpts();
         config.preprocessOpenAPI(openAPI);
+
+        // HACK: MS
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(new File("C:\\Temp\\openAPI.json"), openAPI);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // set OpenAPI and schemas to make these available to all methods
         config.setGlobalOpenAPI(openAPI);

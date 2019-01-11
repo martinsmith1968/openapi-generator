@@ -232,6 +232,15 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     }
 
     @Override
+    public String toApiFilename(String name) {
+        String actualName = name.length() == 0
+                ? "Default"
+                : name;
+
+        return initialCaps(actualName) + "ApiController";
+    }
+
+    @Override
     public String modelFileFolder() {
         return outputFolder + File.separator + sourceFolder + File.separator + packageName + File.separator + "Models";
     }
