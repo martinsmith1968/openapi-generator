@@ -72,6 +72,8 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
     private String contextPath;
     private Map<String, String> generatorPropertyDefaults = new HashMap<>();
 
+    public static String InputFileName;
+
     @Override
     public Generator opts(ClientOptInput opts) {
         this.opts = opts;
@@ -186,12 +188,13 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
         config.preprocessOpenAPI(openAPI);
 
         // HACK: MS
+        InputFileName = config.getInputSpec();
         try {
             // HACK: MS - Export internal model as Json for template development
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            String fileName = config.getInputSpec() + ".openAPIModel.json";
+            String fileName = InputFileName + ".openAPIModel.json";
 
             mapper.writerWithDefaultPrettyPrinter()
                     .writeValue(new File(fileName), openAPI);
