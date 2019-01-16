@@ -243,6 +243,19 @@ public class DefaultCodegen implements CodegenConfig {
             }
         }
 
+        try {
+            // HACK: MS - Export internal model as Json for template development
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            String fileName = DefaultGenerator.InputFileName + ".openAPI.allModels.json";
+
+            mapper.writerWithDefaultPrettyPrinter()
+                    .writeValue(new File(fileName), allModels);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // Fix up all parent and interface CodegenModel references.
         for (CodegenModel cm : allModels.values()) {
             if (cm.getParent() != null) {
