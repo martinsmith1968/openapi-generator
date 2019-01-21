@@ -27,6 +27,7 @@ import org.openapitools.codegen.utils.URLPathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.SchemaOutputResolver;
 import java.io.File;
 import java.lang.IllegalArgumentException;
 import java.net.URL;
@@ -42,6 +43,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     public static final String ASPNET_CORE_VERSION = "aspnetCoreVersion";
     public static final String USE_INTERFACES = "useInterfaces";
     public static final String USE_ASYNC = "useAsync";
+    public static final String SOURCE_PACKAGE_FOLDER = "sourcePackageFolder";
 
     private String packageGuid = "{" + randomUUID().toString().toUpperCase(Locale.ROOT) + "}";
 
@@ -51,6 +53,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     private boolean useSwashbuckle = true;
     private boolean useInterfaces = false;
     private boolean useAsync = false;
+    private String sourcePackageFolder = "";
     protected int serverPort = 8080;
     protected String serverHost = "0.0.0.0";
     protected String aspnetCoreVersion= "2.1"; // default to 2.1
@@ -122,6 +125,10 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         addSwitch(USE_ASYNC,
                 "Generate async actions for each controller",
                 useInterfaces);
+
+        addOption(SOURCE_PACKAGE_FOLDER,
+                "Override the folder used for root of the package / project",
+                sourcePackageFolder);
     }
 
     @Override
@@ -174,6 +181,11 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
             additionalProperties.put(USE_ASYNC, useAsync);
         }
 
+        if (additionalProperties.containsKey(SOURCE_PACKAGE_FOLDER)) {
+            sourcePackageFolder = (String) additionalProperties.get(SOURCE_PACKAGE_FOLDER);
+        }
+        additionalProperties.put(SOURCE_PACKAGE_FOLDER, getPackageFolder());
+
         // determine the ASP.NET core version setting
         if (additionalProperties.containsKey(ASPNET_CORE_VERSION)) {
             setAspnetCoreVersion((String) additionalProperties.get(ASPNET_CORE_VERSION));
@@ -184,7 +196,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         apiPackage = packageName + ".Controllers";
         modelPackage = packageName + ".Models";
 
-        String packageFolder = sourceFolder + File.separator + packageName;
+        String packageFolder = getPackageFolder();
 
         if ("2.0".equals(aspnetCoreVersion)) {
             embeddedTemplateDir = templateDir = "aspnetcore/2.0";
@@ -238,7 +250,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
     @Override
     public String apiFileFolder() {
-        return outputFolder + File.separator + sourceFolder + File.separator + packageName + File.separator + "Controllers";
+        return getPackageFolder() + File.separator + "Controllers";
     }
 
     @Override
@@ -250,9 +262,16 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         return initialCaps(actualName) + "ApiController";
     }
 
+    protected String getPackageFolder() {
+        return sourcePackageFolder.length() == 0
+                ? outputFolder + File.separator + sourceFolder + File.separator + packageName
+                : sourcePackageFolder
+                    .replace("{{packageName}}", packageName);
+    }
+
     @Override
     public String modelFileFolder() {
-        return outputFolder + File.separator + sourceFolder + File.separator + packageName + File.separator + "Models";
+        return getPackageFolder() + File.separator + "Models";
     }
 
     @Override
