@@ -6,6 +6,6 @@
         /// <summary>
         /// {{#summary}}{{summary}}{{/summary}}{{#notes}}{{notes}}{{/notes}}
         /// </summary>
-        IActionResult {{operationId}}({{#allParams}}{{&dataType}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+        {{>operation_result}} {{operationId}}({{#allParams}}{{&dataType}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
 {{/operation}} {{/operations}}
     }

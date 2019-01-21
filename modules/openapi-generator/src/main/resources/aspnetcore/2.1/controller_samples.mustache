@@ -9,7 +9,7 @@
         /// <remarks>
         /// Sample responses - for reference when building Interface implementation
         /// </remarks>
-        internal static IActionResult {{operationId}}({{#allParams}}{{&dataType}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        internal static {{>operation_result}} {{operationId}}({{#allParams}}{{&dataType}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
         {
 {{>operation_sample}}
         }

@@ -2,12 +2,12 @@
 {{#dataType}}
 
             //TODO: Uncomment the next line to return response {{code}} or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode({{code}}, default({{&dataType}}));
+            // return {{#useAsync}}await {{/useAsync}}StatusCode({{code}}, default({{&dataType}}));
 {{/dataType}}
 {{^dataType}}
 
             //TODO: Uncomment the next line to return response {{code}} or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode({{code}});
+            // return {{#useAsync}}await {{/useAsync}}StatusCode({{code}});
 {{/dataType}}{{/responses}}
 {{#returnType}}
 
@@ -18,6 +18,7 @@
             {{#isListCollection}}{{>listReturn}}{{/isListCollection}}{{^isListCollection}}{{#isMapContainer}}{{>mapReturn}}{{/isMapContainer}}{{^isMapContainer}}{{>objectReturn}}{{/isMapContainer}}{{/isListCollection}}
             {{!TODO: defaultResponse, examples, auth, consumes, produces, nickname, externalDocs, imports, security}}
             //TODO: Change the data returned
-            return new ObjectResult(example);{{/returnType}}{{^returnType}}
+            return {{#useAsync}}await {{/useAsync}}new ObjectResult(example);{{/returnType}}{{^returnType}}
 
-            throw new NotImplementedException();{{/returnType}}
+            // Use if not ready to implement
+            //throw new NotImplementedException();{{/returnType}}

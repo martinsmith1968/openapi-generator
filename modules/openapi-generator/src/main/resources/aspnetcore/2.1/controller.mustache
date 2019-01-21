@@ -40,11 +40,10 @@ namespace {{packageName}}.Controllers
         [ValidateModelState]{{#useSwashbuckle}}
         [SwaggerOperation("{{operationId}}")]{{#responses}}{{#dataType}}
         [SwaggerResponse(statusCode: {{code}}, type: typeof({{&dataType}}), description: "{{message}}")]{{/dataType}}{{^dataType}}{{/dataType}}{{/responses}}{{/useSwashbuckle}}
-        public virtual IActionResult {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        public virtual {{>operation_result}} {{operationId}}({{#allParams}}{{>pathParam}}{{>queryParam}}{{>bodyParam}}{{>formParam}}{{>headerParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
         { {{#useInterfaces}}
-            return _implemented{{classname}}Controller.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
-        {{/useInterfaces}} {{^useInterfaces}}
-         {{>operation_sample}} {{/useInterfaces}}
+            return {{#useAsync}}await {{/useAsync}}_implemented{{classname}}Controller.{{operationId}}({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+        {{/useInterfaces}}{{^useInterfaces}}{{>operation_sample}}{{/useInterfaces}}
         }
         {{/operation}}
     }

@@ -41,6 +41,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     public static final String USE_SWASHBUCKLE = "useSwashbuckle";
     public static final String ASPNET_CORE_VERSION = "aspnetCoreVersion";
     public static final String USE_INTERFACES = "useInterfaces";
+    public static final String USE_ASYNC = "useAsync";
 
     private String packageGuid = "{" + randomUUID().toString().toUpperCase(Locale.ROOT) + "}";
 
@@ -49,6 +50,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
     private boolean useSwashbuckle = true;
     private boolean useInterfaces = false;
+    private boolean useAsync = false;
     protected int serverPort = 8080;
     protected String serverHost = "0.0.0.0";
     protected String aspnetCoreVersion= "2.1"; // default to 2.1
@@ -60,7 +62,6 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
         modelTemplateFiles.put("model.mustache", ".cs");
         apiTemplateFiles.put("controller.mustache", ".cs");
-        //apiTemplateFiles.put("controller_interface.mustache", ".cs");
 
         embeddedTemplateDir = templateDir = "aspnetcore/2.1";
 
@@ -118,6 +119,9 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
                 "Generate a matching Interface for each controller",
                 useInterfaces);
 
+        addSwitch(USE_ASYNC,
+                "Generate async actions for each controller",
+                useInterfaces);
     }
 
     @Override
@@ -162,6 +166,12 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
             useInterfaces = convertPropertyToBooleanAndWriteBack(USE_INTERFACES);
         } else {
             additionalProperties.put(USE_INTERFACES, useInterfaces);
+        }
+
+        if (additionalProperties.containsKey(USE_ASYNC)) {
+            useAsync = convertPropertyToBooleanAndWriteBack(USE_ASYNC);
+        } else {
+            additionalProperties.put(USE_ASYNC, useAsync);
         }
 
         // determine the ASP.NET core version setting
