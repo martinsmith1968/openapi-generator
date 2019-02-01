@@ -16,14 +16,14 @@ namespace {{packageName}}.Controllers
     /// {{classname}} Controller
     /// </summary>{{#description}}
     [Description("{{description}}")]{{/description}}
-    public class {{classname}}Controller : ControllerBase
+    public{{#usePartialControllers}} partial{{/usePartialControllers}} class {{classname}}Controller{{#controllerBaseClass}} : {{controllerBaseClass}}{{/controllerBaseClass}}
     { {{#useInterfaces}}
-        private readonly I{{classname}}Controller _implemented{{classname}}Controller;
+        private readonly {{interfacePrefix}}{{classname}}Controller _implemented{{classname}}Controller;
 
         /// <summary>
         /// Constructor accepting interface for implementation of endpoints
         /// </summary>
-        public {{classname}}Controller(I{{classname}}Controller implemented{{classname}}Controller)
+        public {{classname}}Controller({{interfacePrefix}}{{classname}}Controller implemented{{classname}}Controller)
         {
             _implemented{{classname}}Controller = implemented{{classname}}Controller
                 ?? throw new ArgumentNullException(nameof(implemented{{classname}}Controller));
