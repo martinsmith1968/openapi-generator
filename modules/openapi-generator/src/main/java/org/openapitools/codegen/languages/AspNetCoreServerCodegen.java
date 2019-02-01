@@ -44,6 +44,8 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     public static final String USE_INTERFACES = "useInterfaces";
     public static final String USE_ASYNC = "useAsync";
     public static final String SOURCE_PACKAGE_FOLDER = "sourcePackageFolder";
+    public static final String CONTROLLER_BASE_CLASS = "controllerBaseClass";
+    public static final String USE_PARTIAL_CONTROLLERS = "usePartialControllers";
 
     private String packageGuid = "{" + randomUUID().toString().toUpperCase(Locale.ROOT) + "}";
 
@@ -54,6 +56,8 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     private boolean useInterfaces = false;
     private boolean useAsync = false;
     private String sourcePackageFolder = "";
+    private String controllerBaseClass = "ControllerBase";
+    private boolean usePartialControllers = false;
     protected int serverPort = 8080;
     protected String serverHost = "0.0.0.0";
     protected String aspnetCoreVersion= "2.1"; // default to 2.1
@@ -129,6 +133,14 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         addOption(SOURCE_PACKAGE_FOLDER,
                 "Override the folder used for root of the package / project",
                 sourcePackageFolder);
+
+        addOption(CONTROLLER_BASE_CLASS,
+                "Override the base class for all generated controllers",
+                controllerBaseClass);
+
+        addSwitch(USE_PARTIAL_CONTROLLERS,
+                "Control whether controller classes are generated as partial",
+                usePartialControllers);
     }
 
     @Override
@@ -191,12 +203,24 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
             setAspnetCoreVersion((String) additionalProperties.get(ASPNET_CORE_VERSION));
         }
 
+        if (additionalProperties.containsKey(CONTROLLER_BASE_CLASS)) {
+            controllerBaseClass = (String) additionalProperties.get(CONTROLLER_BASE_CLASS);
+        }
+
+        if (additionalProperties.containsKey(USE_PARTIAL_CONTROLLERS)) {
+            usePartialControllers = convertPropertyToBooleanAndWriteBack(USE_PARTIAL_CONTROLLERS);
+        } else {
+            additionalProperties.put(USE_PARTIAL_CONTROLLERS, usePartialControllers);
+        }
+
         additionalProperties.put("dockerTag", packageName.toLowerCase(Locale.ROOT));
 
         apiPackage = packageName + ".Controllers";
         modelPackage = packageName + ".Models";
 
         String packageFolder = getPackageFolder();
+        // TODO:
+        packageFolder = sourceFolder + File.separator + packageName;
 
         if ("2.0".equals(aspnetCoreVersion)) {
             embeddedTemplateDir = templateDir = "aspnetcore/2.0";
@@ -264,7 +288,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
     protected String getPackageFolder() {
         return sourcePackageFolder.length() == 0
-                ? outputFolder + File.separator + sourceFolder + File.separator + packageName
+                ? sourceFolder + File.separator + packageName
                 : sourcePackageFolder
                     .replace("{{packageName}}", packageName);
     }
