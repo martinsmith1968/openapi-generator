@@ -70,7 +70,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         modelTemplateFiles.put("model.mustache", ".cs");
         apiTemplateFiles.put("controller.mustache", ".cs");
 
-        embeddedTemplateDir = templateDir = "aspnetcore/2.1";
+        embeddedTemplateDir = templateDir = "aspnetcore/" + aspnetCoreVersion;
 
         // contextually reserved words
         // NOTE: C# uses camel cased reserved words, while models are title cased. We don't want lowercase comparisons.
@@ -223,14 +223,17 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         packageFolder = sourceFolder + File.separator + packageName;
 
         if ("2.0".equals(aspnetCoreVersion)) {
-            embeddedTemplateDir = templateDir = "aspnetcore/2.0";
             supportingFiles.add(new SupportingFile("web.config", packageFolder, "web.config"));
             LOGGER.info("ASP.NET core version: 2.0");
         } else if ("2.1".equals(aspnetCoreVersion)) {
             // default, do nothing
             LOGGER.info("ASP.NET core version: 2.1");
+        } else if ("2.2".equals(aspnetCoreVersion)) {
+            LOGGER.info("ASP.NET core version: 2.2");
+        } else if ("3.1".equals(aspnetCoreVersion)) {
+            LOGGER.info("ASP.NET core version: 3.1");
         } else {
-            throw new IllegalArgumentException("aspnetCoreVersion must be '2.1', '2.0' but found " + aspnetCoreVersion);
+            throw new IllegalArgumentException("aspnetCoreVersion must be '3.1', '2.1', '2.2', '2.0' but found: " + aspnetCoreVersion);
         }
 
         supportingFiles.add(new SupportingFile("build.sh.mustache", "", "build.sh"));
@@ -244,6 +247,8 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         supportingFiles.add(new SupportingFile("Startup.mustache", packageFolder, "Startup.cs"));
         supportingFiles.add(new SupportingFile("Program.mustache", packageFolder, "Program.cs"));
         supportingFiles.add(new SupportingFile("validateModel.mustache", packageFolder + File.separator + "Attributes", "ValidateModelStateAttribute.cs"));
+        supportingFiles.add(new SupportingFile("minimumValueValidation.mustache", packageFolder + File.separator + "Attributes", "MinimumValueAttribute.cs"));
+        supportingFiles.add(new SupportingFile("maximumValueValidation.mustache", packageFolder + File.separator + "Attributes", "MaximumValueAttribute.cs"));
         supportingFiles.add(new SupportingFile("Project.csproj.mustache", packageFolder, packageName + ".csproj"));
 
         supportingFiles.add(new SupportingFile("Properties" + File.separator + "launchSettings.json",
