@@ -46,6 +46,8 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     public static final String SOURCE_PACKAGE_FOLDER = "sourcePackageFolder";
     public static final String CONTROLLER_BASE_CLASS = "controllerBaseClass";
     public static final String USE_PARTIAL_CONTROLLERS = "usePartialControllers";
+    public static final String MODELS_FOLDER = "modelsFolder";
+    public static final String MODELS_NAMESPACE = "modelsNamespace";
 
     private String packageGuid = "{" + randomUUID().toString().toUpperCase(Locale.ROOT) + "}";
 
@@ -61,6 +63,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
     protected int serverPort = 8080;
     protected String serverHost = "0.0.0.0";
     protected String aspnetCoreVersion= "2.1"; // default to 2.1
+    protected String modelsFolder = "Models";
 
     public AspNetCoreServerCodegen() {
         super();
@@ -141,6 +144,10 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         addSwitch(USE_PARTIAL_CONTROLLERS,
                 "Control whether controller classes are generated as partial",
                 usePartialControllers);
+
+        addOption(MODELS_FOLDER,
+                "Specify the folder to generate models into",
+                modelsFolder);
     }
 
     @Override
@@ -213,6 +220,13 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
             additionalProperties.put(USE_PARTIAL_CONTROLLERS, usePartialControllers);
         }
 
+        if (additionalProperties.containsKey(MODELS_FOLDER)) {
+            modelsFolder = (String) additionalProperties.get(MODELS_FOLDER);
+        } else {
+            additionalProperties.put(MODELS_FOLDER, modelsFolder);
+        }
+        additionalProperties.put(MODELS_NAMESPACE, getModelsNamespace());
+
         additionalProperties.put("dockerTag", packageName.toLowerCase(Locale.ROOT));
 
         apiPackage = packageName + ".Controllers";
@@ -282,6 +296,13 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
         return getPackageFolder() + File.separator + "Controllers";
     }
 
+    private String getModelsNamespace() {
+        return modelsFolder
+                .replace("\\", ".")
+                .replace("/", ".")
+                ;
+    }
+
     @Override
     public String toApiFilename(String name) {
         String actualName = name.length() == 0
@@ -300,7 +321,7 @@ public class AspNetCoreServerCodegen extends AbstractCSharpCodegen {
 
     @Override
     public String modelFileFolder() {
-        return getPackageFolder() + File.separator + "Models";
+        return getPackageFolder() + File.separator + modelsFolder;
     }
 
     @Override
